@@ -31,59 +31,50 @@ namespace Vending_Machine
 
 
 
-			Sum.Text = $"{sum}";
-			Sum.TextAlignment = TextAlignment.Right;
+            Sum.Content = $"{sum}";
 
-			// Загрузка из БД в форму.
+            // Загрузка из БД в форму.
 
-			var moneyMachine = db.MachineWallets;
+            var moneyMachine = db.MachineWallets;
 			    MachineWallet walletMachine = moneyMachine.Find(1);
-			    Machine1.Text = $"{walletMachine.Quantity}";
+			    Machine1.Content = $"{walletMachine.Quantity}";
 			    walletMachine = moneyMachine.Find(2);
-			    Machine2.Text = $"{walletMachine.Quantity}";                            // Кошелёк автомата
+			    Machine2.Content = $"{walletMachine.Quantity}";                            // Кошелёк автомата
 			    walletMachine = moneyMachine.Find(3);
-			    Machine5.Text = $"{walletMachine.Quantity}";
+			    Machine5.Content = $"{walletMachine.Quantity}";
 			    walletMachine = moneyMachine.Find(4);
-			    Machine10.Text = $"{walletMachine.Quantity}";
+			    Machine10.Content = $"{walletMachine.Quantity}";
 			 
 			var moneyBuyer = db.BuyerWallets;
 				BuyerWallet walletBuyer = moneyBuyer.Find(1);
-				Buyer1.Text = $"{walletBuyer.Quantity}";
+				Buyer1.Content = $"{walletBuyer.Quantity}";
 			    walletBuyer = moneyBuyer.Find(2);
-				Buyer2.Text = $"{walletBuyer.Quantity}";                                 // Кошелёк пользователя
+				Buyer2.Content = $"{walletBuyer.Quantity}";                                 // Кошелёк пользователя
 			    walletBuyer = moneyBuyer.Find(3);
-				Buyer5.Text = $"{walletBuyer.Quantity}";
+				Buyer5.Content = $"{walletBuyer.Quantity}";
 			    walletBuyer = moneyBuyer.Find(4);
-				Buyer10.Text = $"{walletBuyer.Quantity}";
+				Buyer10.Content = $"{walletBuyer.Quantity}";
 			 
 			var products = db.VendingMachines;
 				VendingMachine product = products.Find(1);
 			    Label1.Content = $"{product.Product}, {product.Price}руб.";
-				TeaPortion.Text = $"{product.Quantity}";
+				TeaPortion.Content = $"{product.Quantity}";
 				product = products.Find(2);
 			    Label2.Content = $"{product.Product}, {product.Price}руб.";
-			    CoffeePortion.Text = $"{product.Quantity}";                                // Количество продуктов
+			    CoffeePortion.Content = $"{product.Quantity}";                                // Количество продуктов
 				product = products.Find(3);
 			    Label3.Content = $"{product.Product}, {product.Price}руб.";
-			    CoffeeMilkPortion.Text = $"{product.Quantity}";
+			    CoffeeMilkPortion.Content = $"{product.Quantity}";
 				product = products.Find(4);
 			    Label4.Content = $"{product.Product}, {product.Price}руб.";
-			    JuicePortion.Text = $"{product.Quantity}";
-			
+			    JuicePortion.Content = $"{product.Quantity}";			
 		}
-		public void WalletChange(TextBox a, TextBox b, int c)
+		public void WalletChange(Label a, Label b, int c)
 		{
-			int x = Convert.ToInt32(a.Text)-1;
-			int y = Convert.ToInt32(b.Text)+1;    
-			a.Text = $"{x}";
-			b.Text = $"{y}";
-			if (c < 0)
-			{
-				c *= -1;
-				int temp = x;                                        // Метод переноса купюр из одного кошелька в другой
-				x = y;
-				y = temp;
-			}
+			int x = Convert.ToInt32(a.Content)-1;
+			int y = Convert.ToInt32(b.Content)+1;    
+			a.Content = $"{x}";
+			b.Content = $"{y}";
 			var moneyBuyer = db.BuyerWallets;
 			BuyerWallet walletBuyer = moneyBuyer.Find(c);
 			walletBuyer.Quantity = x;
@@ -93,9 +84,9 @@ namespace Vending_Machine
 			db.SaveChanges();
 		}
 
-		public void Purchase(TextBox balance, int IdProduct)
+		public void Purchase(Label balance, int IdProduct)
 		{
-			int x = Convert.ToInt32(balance.Text);
+			int x = Convert.ToInt32(balance.Content);
 			var products = db.VendingMachines;
 			VendingMachine product = products.Find(IdProduct);
 			if (x == 0)
@@ -103,49 +94,59 @@ namespace Vending_Machine
 			else
 			{
 				
-				if (product.Price > Convert.ToInt32(Sum.Text))                    // Метод покупки
+				if (product.Price > Convert.ToInt32(Sum.Content))                    // Метод покупки
 					MessageBox.Show("Пополните баланс.");
 				else
 				{
 					x -= 1;
 					sum -= product.Price;
-					Sum.Text = $"{sum}";
-					Sum.TextAlignment = TextAlignment.Right;
-					balance.Text = $"{x}";
-					product.Quantity = Convert.ToInt32(balance.Text);
+                    Sum.Content = $"{sum}";
+                    balance.Content = $"{x}";
+					product.Quantity = Convert.ToInt32(balance.Content);
 					db.SaveChanges();
 					MessageBox.Show("Спасибо.");
 				}
 			}
 		}
-		public void Deposit(TextBox a, TextBox b, int IdWallet)
+		public void Deposit(Label a, Label b, int IdWallet)
 		{
-			if (Convert.ToInt32(a.Text) == 0)
+			if (Convert.ToInt32(a.Content) == 0)
 				MessageBox.Show("Купюры этого номинала у Вас закончились.");
 			else
 			{                                                                              //Метод переноса купюр
 				var moneyMachine = db.MachineWallets;
 				MachineWallet walletMachine = moneyMachine.Find(IdWallet);
 				sum += walletMachine.CoinValue;
-				Sum.Text = $"{sum}";
-				Sum.TextAlignment = TextAlignment.Right;
+				Sum.Content = $"{sum}";
 				WalletChange(a, b, IdWallet);
 			}
 		}
-		public void CashBack(TextBox a, TextBox b, int c)
+		public void CashBack(Label a, Label b, int c)
 		{
-			var moneyMachine = db.MachineWallets;
-			MachineWallet walletMachine = moneyMachine.Find(c);
-			while (sum >= walletMachine.CoinValue)
-			{                                                                             //Метод возврата денег
-				if (Convert.ToInt32(a.Text) != 0)
-				{
-					sum -= walletMachine.CoinValue;
-					WalletChange(Machine10, Buyer10, -c);
-				}
-				else break;
-			}
-		}
+            int x = Convert.ToInt32(a.Content);
+            int y = Convert.ToInt32(b.Content);
+            var moneyMachine = db.MachineWallets;
+            MachineWallet walletMachine = moneyMachine.Find(c);
+            int k= walletMachine.CoinValue;
+            while (sum >= k)
+            {
+                if (x != 0)
+                {
+                    x -= 1;
+                    y += 1;
+                    sum -= k;
+                }
+                else break;
+            }         
+			a.Content = $"{x}";
+			b.Content = $"{y}";
+            Sum.Content = $"{sum}";            
+            var moneyBuyer = db.BuyerWallets;
+            BuyerWallet walletBuyer = moneyBuyer.Find(c);
+            walletBuyer.Quantity = y;
+            walletMachine.Quantity = x;
+            db.SaveChanges();
+        }
 		// Покупки
 		private void ButtonTea_Click(object sender, RoutedEventArgs e)
 		{
@@ -191,8 +192,7 @@ namespace Vending_Machine
 			CashBack(Machine2, Buyer2, 2);
 			CashBack(Machine1, Buyer1, 1);
 
-			Sum.Text = $"{sum}";
-			Sum.TextAlignment = TextAlignment.Right;
+			Sum.Content = $"{sum}";
 			MessageBox.Show("Заберите Ваши деньги.");
 		}
 	}
